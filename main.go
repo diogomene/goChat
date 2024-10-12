@@ -9,12 +9,12 @@ import (
 func main() {
 
 	s := entities.NewServer()
+	go s.Run()
 	listener, err := net.Listen("tcp", ":8888")
-	defer listener.Close()
-
 	if err != nil {
 		log.Fatal(err.Error())
 	}
+	defer listener.Close()
 
 	for {
 		conn, err := listener.Accept()
@@ -23,7 +23,7 @@ func main() {
 			continue
 		}
 
-		go s.newClient(conn)
+		go s.NewClient(conn)
 	}
 
 }
