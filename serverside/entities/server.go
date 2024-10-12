@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"log"
 	"net"
-	"strings"
 )
 
 type Server struct {
@@ -23,21 +22,18 @@ func (s *Server) Run() {
 	for cmd := range s.commands {
 		switch cmd.id {
 		case CMD_NICK:
-			if len(cmd.args) < 2 {
+			if cmd.args[0] == "" {
 				continue
 			}
 			s.nick(cmd.client, cmd.args)
 		case CMD_JOIN:
-			if len(cmd.args) < 2 {
+			if cmd.args[0] == "" {
 				continue
 			}
 			s.join(cmd.client, cmd.args)
 		case CMD_ROOMS:
 			s.rooms(cmd.client)
 		case CMD_MSG:
-			if len(cmd.args) < 2 {
-				continue
-			}
 			s.msg(cmd.client, cmd.args)
 		case CMD_QUIT:
 			s.quit(cmd.client)
@@ -57,13 +53,13 @@ func (s *Server) NewClient(conn net.Conn) {
 }
 
 func (s *Server) nick(c *Client, args []string) {
-	c.nick = args[1]
+	c.nick = args[0]
 	c.msg(fmt.Sprintf("You are now known as %s", c.nick))
 }
 
 func (s *Server) join(c *Client, args []string) {
 	fmt.Println("Joined room")
-	roomName := args[1]
+	roomName := args[0]
 	r, ok := s.room[roomName]
 	if !ok {
 		r = &Room{
@@ -107,8 +103,7 @@ func (s *Server) msg(c *Client, args []string) {
 		return
 	}
 
-	msg := strings.Join(args[1:], " ")
-	c.msg(fmt.Sprintf("You: %s", msg))
+	msg := args[0]
 	c.room.broadcast(c, fmt.Sprintf("%s: %s", c.nick, msg))
 }
 
