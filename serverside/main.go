@@ -1,9 +1,10 @@
 package main
 
 import (
-	entities "diogomene/gochat/entities"
 	"log"
 	"net"
+
+	entities "github.com/diogomene/goChat/entities"
 )
 
 func main() {
